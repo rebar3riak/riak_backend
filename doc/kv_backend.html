@@ -1,0 +1,219 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Module kv_backend</title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" title="EDoc">
+</head>
+<body bgcolor="white">
+<div class="navbar"><a name="#navbar_top"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<hr>
+
+<h1>Module kv_backend</h1>
+<ul class="index"><li><a href="#description">Description</a></li><li><a href="#types">Data Types</a></li></ul>The kv_backend module specifies general storage backend operations.
+
+<p><b>Version:</b> 1</p>
+<p><b>This module defines the <tt>kv_backend</tt> behaviour.</b><br> Required callback functions: <tt>implements/0</tt>, <tt>implements/1</tt>, <tt>init/1</tt>, <tt>start/2</tt>, <tt>stop/1</tt>, <tt>supports/0</tt>, <tt>supports/1</tt>.</p>
+
+<h2><a name="description">Description</a></h2><p>The kv_backend module specifies general storage backend operations.</p>
+ 
+   <p>Additional classes of functionality are defined in separate behaviors,
+   including (but not limited to) <a href="riak_backend_index.html"><code>riak_backend_index</code></a> and
+   <a href="riak_backend_query.html"><code>riak_backend_query</code></a>.</p>
+ 
+   <p>Backends are referenced as <em>implementations</em> and <em>instances</em>,   
+each with their own type of handle and recognized configuration values.</p>
+ 
+ 
+  <h2><a name="functions">Callback Details</a></h2>
+ 
+   <h3 class="function"><a name="implements-0">implements/0</a></h3>
+   <div class="spec">
+       implements() -&gt; InterfaceList
+   <div class="spec">
+       InterfaceList :: <a href="#type-interfaces"><code>interfaces()</code></a>
+   </div></div><p>   
+Returns the list of supported kv_backend[...] interfaces.</p>
+ 
+   <p>The calling interface is always included in the result.</p>
+ 
+   <h3 class="function"><a name="implements-1">implements/1</a></h3>
+   <div class="spec">
+       implements(Interface) -&gt; API_Version | <code>false</code>
+   <div class="spec">
+       Interface :: <a href="#type-interface"><code>interface()</code></a> <br>
+       API_Version :: <a href="#type-api_version"><code>api_version()</code></a>
+   </div></div><p>   
+Reports whether the specified Interface is supported.</p>
+ 
+   <p>The result is the version of the interface API that is supported,
+   or <code>false</code> if the specified interface is not in the list returned
+   by <a href="#implements-0"><code>implements/0</code></a>.</p>
+ 
+   <h3 class="function"><a name="init-1">init/1</a></h3>
+   <div class="spec">
+       init(Config) -&gt; Handle | Error
+   <div class="spec">
+       Config :: <a href="#type-config"><code>config()</code></a> <br>
+       Handle :: <a href="#type-handle"><code>handle()</code></a> <br>
+       Error :: <a href="#type-error"><code>error()</code></a>
+   </div></div><p>   
+Initializes the backend with the specified configuration.</p>
+ 
+   <p>The resulting handle is passed to <a href="#start-2"><code>start/2</code></a> to start one or more   
+instances.</p>
+ 
+   <h3 class="function"><a name="start-2">start/2</a></h3>
+   <div class="spec">
+       start(BackendHandle, Config) -&gt; InstanceHandle | Error
+   <div class="spec">
+       Config :: <a href="#type-config"><code>config()</code></a> <br>
+       BackendHandle :: <a href="#type-handle"><code>handle()</code></a> <br>
+       InstanceHandle :: <a href="#type-handle"><code>handle()</code></a> <br>
+       Error :: <a href="#type-error"><code>error()</code></a>
+   </div></div><p>   
+Starts an instance of the backend.</p>
+ 
+   <p>If <code>{error, already_running}</code> is returned, the <a href="#type-handle"><code>handle()</code></a> that   
+is current for the instance should be used to perform operations.</p>
+ 
+   <h3 class="function"><a name="stop-1">stop/1</a></h3>
+   <div class="spec">
+       stop(InstanceHandle) -&gt; <code>ok</code> | Error
+   <div class="spec">
+       InstanceHandle :: <a href="#type-inst_handle"><code>inst_handle()</code></a> <br>
+       Error :: <a href="#type-error"><code>error()</code></a>
+   </div></div><p>   
+Stops a backend instance.</p>
+ 
+   <h3 class="function"><a name="supports-0">supports/0</a></h3>
+   <div class="spec">
+       supports() -&gt; Features
+   <div class="spec">
+       Features :: <a href="#type-features"><code>features()</code></a>
+   </div></div><p>   
+Reports the backend implementation's supported features.</p>
+ 
+   <h3 class="function"><a name="supports-1">supports/1</a></h3>
+   <div class="spec">
+       supports(BackendHandle | InstanceHandle) -&gt; Features | Error
+   <div class="spec">
+       BackendHandle :: <a href="#type-handle"><code>handle()</code></a> <br>
+       InstanceHandle :: <a href="#type-handle"><code>handle()</code></a> <br>
+       Features :: <a href="#type-features"><code>features()</code></a>
+       Error :: <a href="#type-error"><code>error()</code></a>
+   </div></div><p>   
+Reports the implementation's or instance's supported features.</p>
+ 
+   If invoked with a BackendHandle, the result <em>may</em> differ from
+   that of <a href="#supports-0"><code>supports/0</code></a> if the loaded implementation has been
+   configured to support a set of features other than its default.
+ 
+<h2><a name="types">Data Types</a></h2>
+
+<h3 class="typedecl"><a name="type-api_version">api_version()</a></h3>
+<p><tt>api_version() = pos_integer()</tt></p>
+<p>  The version of a backend API, i.e. this interface.</p>
+
+<h3 class="typedecl"><a name="type-attributes">attributes()</a></h3>
+<p><tt>attributes() = term()</tt></p>
+<p>  Some information understood by a backend that affects an operation.
+  Type constraints on attributes MUST be clearly documented by specific
+  implementations.</p>
+
+<h3 class="typedecl"><a name="type-be_version">be_version()</a></h3>
+<p><tt>be_version() = string()</tt></p>
+<p>  The version of a backend implementation.  This is a freeform string, but
+  is expected to have a semver-ish format, possibly with a text suffix.
+  Extra points for separating the suffix from the dotted-decimal version
+  with a dash (<code>-</code>).</p>
+
+<h3 class="typedecl"><a name="type-config">config()</a></h3>
+<p><tt>config() = [{atom(), term()}]</tt></p>
+<p>  The configuration used/required to initialize a backend or instance.
+  Recognized and required configuration elements MUST be documented by
+  specific backend implementations.</p>
+
+<h3 class="typedecl"><a name="type-error">error()</a></h3>
+<p><tt>error() = {error, term()}</tt></p>
+<p>  Unless otherwise specified, all errors are returned in standard
+  <code>{error, Reason}</code> form.</p>
+
+<h3 class="typedecl"><a name="type-feature">feature()</a></h3>
+<p><tt>feature() = <a href="#type-feature_create">feature_create()</a> | <a href="#type-feature_delete">feature_delete()</a> | <a href="#type-feature_read">feature_read()</a> | <a href="#type-feature_readonly">feature_readonly()</a> | <a href="#type-feature_update">feature_update()</a></tt></p>
+<p>  An individual backend feature.</p>
+
+<h3 class="typedecl"><a name="type-feature_create">feature_create()</a></h3>
+<p><tt>feature_create() = c</tt></p>
+<p>  Instances can create new records.
+  If <a href="#put-4"><code>put/4</code></a> or <a href="#put-5"><code>put/5</code></a> is invoked with a new <a href="#type-key"><code>key()</code></a> on
+  an instance that does not support this feature, <a href="#type-not_sup"><code>not_sup()</code></a> is
+  returned.</p>
+
+<h3 class="typedecl"><a name="type-feature_delete">feature_delete()</a></h3>
+<p><tt>feature_delete() = d</tt></p>
+<p>  Instances can delete existing records.
+  If <a href="#delete-3"><code>delete/3</code></a> is invoked on an instance that does not support this
+  feature, <a href="#type-not_sup"><code>not_sup()</code></a> is returned.</p>
+
+<h3 class="typedecl"><a name="type-feature_read">feature_read()</a></h3>
+<p><tt>feature_read() = r</tt></p>
+<p>  Instances can read existing records.
+  If <a href="#get-3"><code>get/3</code></a> is invoked on an instance that does not support this
+  feature, <a href="#type-not_sup"><code>not_sup()</code></a> is returned.</p>
+
+<h3 class="typedecl"><a name="type-feature_readonly">feature_readonly()</a></h3>
+<p><tt>feature_readonly() = ro</tt></p>
+<p><p>  Instances can apply a <code>read only</code> attribute to records.</p>
+ 
+  If supported, the attribute may be applied to <code>create</code> or <code>update</code>
+  operations.</p>
+
+<h3 class="typedecl"><a name="type-feature_update">feature_update()</a></h3>
+<p><tt>feature_update() = u</tt></p>
+<p>  Instances can update (overwrite) existing records.
+  If <a href="#put-4"><code>put/4</code></a> or <a href="#put-5"><code>put/5</code></a> is invoked with an existing <a href="#type-key"><code>key()</code></a>
+  on an instance that does not support this feature, <a href="#type-not_sup"><code>not_sup()</code></a> is
+  returned.</p>
+
+<h3 class="typedecl"><a name="type-features">features()</a></h3>
+<p><tt>features() = [<a href="#type-feature">feature()</a>]</tt></p>
+<p>  A collection of backend features.</p>
+
+<h3 class="typedecl"><a name="type-handle">handle()</a></h3>
+<p><tt>handle() = term()</tt></p>
+<p>  An opaque object containing the state required to properly reference
+  a backend implementation or instance.  Handles are logically constant,
+  so they are reusable without being updated after function invocations.</p>
+
+<h3 class="typedecl"><a name="type-interface">interface()</a></h3>
+<p><tt>interface() = module()</tt></p>
+<p>  An interface (behavior) module.</p>
+
+<h3 class="typedecl"><a name="type-interfaces">interfaces()</a></h3>
+<p><tt>interfaces() = [<a href="#type-interface">interface()</a>]</tt></p>
+<p>  A collection of interfaces.</p>
+
+<h3 class="typedecl"><a name="type-key">key()</a></h3>
+<p><tt>key() = term()</tt></p>
+<p>  A backend record key in whatever form the implementation supports.
+  Type constraints on keys should be clearly documented by the specific
+  implementation.</p>
+
+<h3 class="typedecl"><a name="type-not_sup">not_sup()</a></h3>
+<p><tt>not_sup() = {error, not_supported}</tt></p>
+<p>  The specific error returned by backend functions invoked in a manner
+  requiring an unsupported <a href="#type-feature"><code>feature()</code></a>.  Callers should check
+  <a href="#supports-0"><code>supports/0</code></a> and/or <a href="#supports-1"><code>supports/1</code></a> to avoid this error.</p>
+
+<h3 class="typedecl"><a name="type-value">value()</a></h3>
+<p><tt>value() = term()</tt></p>
+<p>  A backend record value in whatever form the implementation supports.
+  Type constraints on values should be clearly documented by the specific
+  implementation.</p>
+<hr>
+
+<div class="navbar"><a name="#navbar_bottom"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<p><i>Generated by EDoc, Apr 13 2016, 09:50:56.</i></p>
+</body>
+</html>

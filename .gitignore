@@ -1,0 +1,24 @@
+# transient tools
+/.cache/
+
+# build artifacts
+/_build/
+
+# temporary stuff
+*.bu
+*.tmp
+tmp/
+
+# editor droppings
+*.bak
+*~
+
+# work environments
+*.iml
+.idea/
+.project
+.settings/
+.tm_properties
+/*.txt
+/env
+/env.local
