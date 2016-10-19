@@ -36,6 +36,13 @@
 %%  Backends are referenced as <em>implementations</em> and <em>instances</em>,
 %%  each with their own type of handle and recognized configuration values.
 %%
+%%  An implementation <em>MAY</em> support additional behaviors, such as
+%%  {@link application}, {@link gen_server}, etc.
+%%  In these cases various callbacks must discriminate appropriately between
+%%  the parameter types for each supported behavior. Since the {@link handle()}
+%%  types are assumed to be sufficiently different from the types expected by
+%%  OTP behaviors, intelligent pattern matching in function heads should be
+%%  possible to assure reliable behavior.
 %%
 %% <h2><a name="functions">Callback Details</a></h2>
 %%
@@ -122,7 +129,7 @@
 %%  configured to support a set of features other than its default.
 %%
 %% @end
--module(kv_backend).
+-module(riak_backend).
 
 -compile(no_auto_import).
 
@@ -134,6 +141,7 @@
     api_version/0,
     attributes/0,
     be_version/0,
+    bucket/0,
     config/0,
     error/0,
     feature/0,
@@ -164,35 +172,35 @@
 %% Extra points for separating the suffix from the dotted-decimal version
 %% with a dash (`-').
 
--type feature_create() :: c.
+-type feature_create() :: 'create'.
 %% Instances can create new records.
 %% If {@link put/4} or {@link put/5} is invoked with a new {@link key()} on
 %% an instance that does not support this feature, {@link not_sup()} is
 %% returned.
 
--type feature_delete() :: d.
+-type feature_delete() :: 'delete'.
 %% Instances can delete existing records.
 %% If {@link delete/3} is invoked on an instance that does not support this
 %% feature, {@link not_sup()} is returned.
 
--type feature_read() :: r.
+-type feature_read() :: 'read'.
 %% Instances can read existing records.
 %% If {@link get/3} is invoked on an instance that does not support this
 %% feature, {@link not_sup()} is returned.
 
--type feature_readonly() :: ro.
+-type feature_readonly() :: 'readonly'.
 %% Instances can apply a `read only' attribute to records.
 %%
 %% If supported, the attribute may be applied to `create' or `update'
 %% operations.
 
--type feature_update() :: u.
+-type feature_update() :: 'update'.
 %% Instances can update (overwrite) existing records.
 %% If {@link put/4} or {@link put/5} is invoked with an existing {@link key()}
 %% on an instance that does not support this feature, {@link not_sup()} is
 %% returned.
 
--type feature()     :: feature_create() 
+-type feature()     :: feature_create()
                      | feature_delete()
                      | feature_read()
                      | feature_readonly()
@@ -202,21 +210,26 @@
 -type features()    :: [feature()].
 %% A collection of backend features.
 
+-type bucket()      :: term().
+%% A backend storage bucket in whatever form the implementation supports.
+%% Type constraints on buckets should be clearly documented by the specific
+%% implementations should be clearly documented..
+
 -type key()         :: term().
 %% A backend record key in whatever form the implementation supports.
 %% Type constraints on keys should be clearly documented by the specific
-%% implementation.
+%% implementations should be clearly documented.
 
 -type value()       :: term().
 %% A backend record value in whatever form the implementation supports.
 %% Type constraints on values should be clearly documented by the specific
 %% implementation.
 
--type error()       :: {error, term()}.
+-type error()       :: {'error', term()}.
 %% Unless otherwise specified, all errors are returned in standard
 %% `{error, Reason}' form.
 
--type not_sup()     :: {error, not_supported}.
+-type not_sup()     :: {'error', {'not_supported', feature()}}.
 %% The specific error returned by backend functions invoked in a manner
 %% requiring an unsupported {@link feature()}.  Callers should check
 %% {@link supports/0} and/or {@link supports/1} to avoid this error.
@@ -242,7 +255,7 @@
 %% a backend implementation or instance.  Handles are logically constant,
 %% so they are reusable without being updated after function invocations.
 
-%%%  @end
+%%  @end
 %%======================================================================
 %%  API functions
 %%======================================================================
@@ -251,10 +264,9 @@
 %%
 
 -callback implements() -> interfaces().
--callback implements(interface()) -> api_version() | false.
+-callback implements(interface()) -> api_version() | 'false'.
 -callback init(config()) -> handle() | error().
 -callback start(handle(), config()) -> handle() | error().
--callback stop(handle()) -> ok | error().
+-callback stop(handle()) -> 'ok' | error().
 -callback supports() -> features().
 -callback supports(handle()) -> features() | error().
-

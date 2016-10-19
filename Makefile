@@ -50,7 +50,14 @@ endif
 endif
 endif
 
-.PHONY	: check clean default docs prereqs veryclean
+#
+# The default edoc layout leaves the monospaced font tiny, so we simply
+# append a tweak to the generated stylesheet.
+#
+cssfile := $(prj_dir)/doc/stylesheet.css
+cssaddl := code,kbd,pre,tt { font-size: larger; }
+
+.PHONY	: check clean clean-docs default docs prereqs veryclean
 
 default : compile
 
@@ -62,9 +69,9 @@ compile : prereqs
 clean : prereqs
 	$(rebar) clean
 
-
 docs : prereqs
 	$(rebar) edoc
+	@grep -q '$(cssaddl)' $(cssfile) || echo '$(cssaddl)' >> $(cssfile)
 
 clean-docs :
 	/bin/rm -rf $(prj_dir)/doc/*
@@ -73,7 +80,7 @@ veryclean :: clean-docs
 
 
 check : prereqs
-	$(rebar) as test do compile, dialyzer
+	$(rebar) as check do dialyzer, xref
 
 
 veryclean :: clean

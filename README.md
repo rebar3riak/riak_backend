@@ -23,5 +23,6 @@ Other than running the `check` and `docs` make targets, there's not much to do w
 Refer to the [license][] for details.
 
 
- [basho]: http://www.basho.com/
+ [basho]:   http://www.basho.com/
+ [rebar3]:  http://www.rebar3.org/
  [license]: LICENSE

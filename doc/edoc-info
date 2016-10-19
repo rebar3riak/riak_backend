@@ -1,3 +1,3 @@
 %% encoding: UTF-8
-{application,kv_backend}.
-{modules,[kv_backend]}.
+{application,riak_backend}.
+{modules,[riak_backend]}.

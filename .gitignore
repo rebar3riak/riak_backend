@@ -1,8 +1,9 @@
 # transient tools
 /.cache/
 
-# build artifacts
+# build/test artifacts
 /_build/
+/*.crashdump
 
 # temporary stuff
 *.bu

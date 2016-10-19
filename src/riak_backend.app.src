@@ -19,7 +19,7 @@
 %%
 %% -------------------------------------------------------------------
 
-{application, kv_backend, [
+{application, riak_backend, [
     {description,   "APIs for Riak backend features"},
     {vsn,           git},
     {registered,    []},

@@ -53,3 +53,4 @@ table {
 td {
 	padding: 3
 }
+code,kbd,pre,tt { font-size: larger; }
